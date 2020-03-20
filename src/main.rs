@@ -56,14 +56,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let out_dir = Path::new("/tmp/");
     for (index, image_url) in images.into_iter().enumerate() {
         let id = image_url.split('/').skip(5).next().unwrap();
-        let out = out_dir.join(format!("{}_{}", index,id));
+        let out = out_dir.join(format!("{}_{}", index, id));
         if !out.exists() {
             let buffer = reqwest::get(image_url).await?.bytes().await?;
             let mut img = image::load_from_memory(&buffer)?;
-            let mut img = img.crop(90, 60, WIDTH - 90 * 2, HEIGHT-60-40).into_rgb();
+            let mut img = img
+                .crop(90, 60, WIDTH - 90 * 2, HEIGHT - 60 - 40)
+                .into_rgb();
             for pixel in img.pixels_mut() {
                 if pixel.0[0] > 100 || pixel.0[1] > 100 || pixel.0[2] > 100 {
-                    pixel.0 = [255,255,255];
+                    pixel.0 = [255, 255, 255];
                 }
             }
             dbg!(&out);
@@ -73,4 +75,3 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
-
